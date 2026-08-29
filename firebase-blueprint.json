@@ -1,0 +1,104 @@
+{
+  "entities": {
+    "PublicBooking": {
+      "title": "Public Booking Info",
+      "description": "Publicly accessible booking times to determine availability",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "description": "YYYY-MM-DD" },
+        "time": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled"] },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["date", "time", "status", "createdAt"]
+    },
+    "PrivateBooking": {
+      "title": "Private Booking Info",
+      "description": "Secure PII for a booking",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "sessionType": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["fullName", "email", "phone", "sessionType", "createdAt"]
+    },
+    "SupportChat": {
+      "title": "Support Chat Session",
+      "description": "Metadata for a user's chat session",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "lastMessage": { "type": "string" },
+        "updatedAt": { "type": "timestamp" },
+        "userEmail": { "type": "string" },
+        "userName": { "type": "string" }
+      },
+      "required": ["userId", "updatedAt"]
+    },
+    "ChatMessage": {
+      "title": "Chat Message",
+      "description": "A single message in a chat session",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderEmail": { "type": "string" },
+        "timestamp": { "type": "number" },
+        "isAdmin": { "type": "boolean" }
+      },
+      "required": ["text", "senderId", "timestamp"]
+    },
+    "AdminOtp": {
+      "title": "Admin Authentication OTP",
+      "description": "Temporary 6-digit passcode for admin login verification",
+      "type": "object",
+      "properties": {
+        "otp": { "type": "string" },
+        "expiresAt": { "type": "number" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["otp", "expiresAt", "createdAt"]
+    },
+    "User": {
+      "title": "Application User",
+      "description": "Registered user profile with role permissions",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "isAdmin": { "type": "boolean" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["email", "isAdmin"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and permissions"
+    },
+    "/admin_otps/{uid}": {
+      "schema": { "$ref": "#/entities/AdminOtp" },
+      "description": "Secure storage for active 2FA passcodes"
+    },
+    "/public_bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/PublicBooking" },
+      "description": "Stores available time slots"
+    },
+    "/private_bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/PrivateBooking" },
+      "description": "Stores client PII details"
+    },
+    "/support_chats/{userId}": {
+      "schema": { "$ref": "#/entities/SupportChat" },
+      "description": "User chat session metadata"
+    },
+    "/support_chats/{userId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Messages within a user's chat session"
+    }
+  }
+}
